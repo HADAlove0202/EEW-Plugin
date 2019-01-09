@@ -8,14 +8,23 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import org.bukkit.entity.Player;
+
 import java.io.File;
+import java.io.Writer;
+import java.util.List;
+import java.util.ArrayList;
+import java.io.OutputStreamWriter;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.FileInputStream;
-import java.io.BufferedReader;
-import java.nio.charset.StandardCharsets;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
+import org.apache.commons.lang.Validate;
 
 public class EEW extends JavaPlugin{
 	public static FileConfiguration config;
@@ -54,12 +63,12 @@ public class EEW extends JavaPlugin{
 			saveResource("config.yml", false);
 		}
 		try {
-			config = YamlConfiguration.loadConfiguration(new BufferedReader(new InputStreamReader(new FileInputStream(new File(getDataFolder(), "config.yml")),StandardCharsets.UTF_8)));
+			config = YamlConfiguration.loadConfiguration(new InputStreamReader(new FileInputStream(new File(getDataFolder(), "config.yml")),Charsets.UTF_8));
 		} catch (FileNotFoundException e) {
 			getLogger().warning(e.getMessage());
 		}
 		final InputStream defConfigStream = this.getResource("config.yml");
-		config.setDefaults(YamlConfiguration.loadConfiguration(new BufferedReader(new InputStreamReader(defConfigStream, StandardCharsets.UTF_8))));
+		config.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream, StandardCharsets.UTF_8)));
 		config.options().copyDefaults(true);
 	}
 	private void loadLang(){
@@ -68,21 +77,51 @@ public class EEW extends JavaPlugin{
 			saveResource("lang.yml", false);
 		}
 		try {
-			lang = YamlConfiguration.loadConfiguration(new BufferedReader(new InputStreamReader(new FileInputStream(new File(getDataFolder(), "lang.yml")),StandardCharsets.UTF_8)));
+			lang = YamlConfiguration.loadConfiguration(new InputStreamReader(new FileInputStream(new File(getDataFolder(), "lang.yml")),Charsets.UTF_8));
 		} catch (FileNotFoundException e) {
 			getLogger().warning(e.getMessage());
 		}
 		final InputStream defConfigStream = this.getResource("lang.yml");
-		lang.setDefaults(YamlConfiguration.loadConfiguration(new BufferedReader(new InputStreamReader(defConfigStream, StandardCharsets.UTF_8))));
+		lang.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream, StandardCharsets.UTF_8)));
 		lang.options().copyDefaults(true);
 	}
-	private void save(FileConfiguration file, String name){
-		try {
-			file.save(new File(getDataFolder(), name));
-		} catch (IOException e) {
+	private void save(FileConfiguration config, String name){
+		try{
+			File file = new File(getDataFolder(), name);
+			Validate.notNull(file, "File cannot be null");
+			Files.createParentDirs(file);
+			String data = config.saveToString();
+			try{
+				Writer writer = new OutputStreamWriter(new FileOutputStream(file), Charsets.UTF_8);
+				writer.write(data);
+				writer.close();
+			}catch(FileNotFoundException e) {
+				getLogger().warning(e.getMessage());
+			}
+		}catch(IOException e){
 			getLogger().warning(e.getMessage());
 		}
 	}
+	@Override
+	public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args){
+		if(cmd.getName().equalsIgnoreCase("eew") && args.length == 1){
+			String get = cmd.getName().toLowerCase();
+			List<String> list = new ArrayList<>();
+			list.add("on");
+			list.add("off");
+			list.add("reloadconfig");
+			list.add("reloadlang");
+			List<String> newlist = new ArrayList<>();
+			for (String str : list) {
+				if(str.startsWith(args[args.length - 1])){
+					newlist.add(str);
+				}
+			}
+			return newlist;
+		}
+		return new ArrayList<>();
+	}
+
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		if (args.length == 1) {
@@ -92,8 +131,12 @@ public class EEW extends JavaPlugin{
 					save(config,"config.yml");
 					id = new EEWListener().runTaskTimer(this, 0, this.config.getInt("tick")).getTaskId();
 					status = 0;
-					sender.sendMessage(getText("command-eew-on"));
-					getLogger().info(getText("command-eew-on"));
+					if(sender instanceof Player){
+						sender.sendMessage(getText("command-eew-on"));
+						getLogger().info(getText("command-eew-on"));
+					}else{
+						getLogger().info(getText("command-eew-on"));
+					}
 				}else{
 					sender.sendMessage(getText("command-eew-on-already"));
 				}
@@ -104,8 +147,12 @@ public class EEW extends JavaPlugin{
 					save(config,"config.yml");
 					Bukkit.getScheduler().cancelTask(id);
 					status = 1;
-					sender.sendMessage(getText("command-eew-off"));
-					getLogger().info(getText("command-eew-off"));
+					if(sender instanceof Player){
+						sender.sendMessage(getText("command-eew-off"));
+						getLogger().info(getText("command-eew-off"));
+					}else{
+						getLogger().info(getText("command-eew-off"));
+					}
 				}else{
 					sender.sendMessage(getText("command-eew-off-already"));
 				}
