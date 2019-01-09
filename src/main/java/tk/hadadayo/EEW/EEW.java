@@ -68,7 +68,7 @@ public class EEW extends JavaPlugin{
 			getLogger().warning(e.getMessage());
 		}
 		final InputStream defConfigStream = this.getResource("config.yml");
-		config.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream, StandardCharsets.UTF_8)));
+		config.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream, Charsets.UTF_8)));
 		config.options().copyDefaults(true);
 	}
 	private void loadLang(){
@@ -82,7 +82,7 @@ public class EEW extends JavaPlugin{
 			getLogger().warning(e.getMessage());
 		}
 		final InputStream defConfigStream = this.getResource("lang.yml");
-		lang.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream, StandardCharsets.UTF_8)));
+		lang.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream, Charsets.UTF_8)));
 		lang.options().copyDefaults(true);
 	}
 	private void save(FileConfiguration config, String name){
