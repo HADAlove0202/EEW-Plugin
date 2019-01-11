@@ -95,7 +95,7 @@ public class EEWListener extends BukkitRunnable{
 					EEW.reportcount++;
 					if(json.getBoolean("is_cancel")){
 						if(isalert){
-							if(EEW.config.getInt("alert.broadcast.mode") <= 3 || (EEW.config.getInt("alert.console.mode") <= 3 && (EEW.config.getInt("alert.message.mode") <= 3 ||EEW.config.getInt("alert.title.mode") <= 3 ))){
+							if(EEW.config.getInt("alert.broadcast.mode") <= 3 || (EEW.config.getInt("alert.console.mode") <= 3 && (EEW.config.getInt("alert.console.mode") <= 3 ||EEW.config.getInt("alert.title.mode") <= 3 ))){
 								Bukkit.broadcastMessage(EEW.getText("cancelled"));
 							}else if(EEW.config.getInt("alert.console.mode") <= 3){
 								Bukkit.getLogger().info(EEW.getText("cancelled"));
