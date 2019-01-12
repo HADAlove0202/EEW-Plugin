@@ -1,4 +1,4 @@
-# EEW-Plugin
+# EEW-Plugin for Bukkit
 Bukkit/Spigot用の緊急地震速報受信プラグイン
 - PocketMine-MP用は[こちら](https://github.com/HADAlove0202/EEW-Plugin-for-PocketMineMP)
 ## 仕様
