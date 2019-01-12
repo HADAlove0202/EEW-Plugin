@@ -56,9 +56,8 @@ public class EEWListener extends BukkitRunnable{
 		try {
 			SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
 			format.setTimeZone(TimeZone.getTimeZone("Asia/Tokyo"));
-			Date date = new Date();
+			Date date = new Date(System.currentTimeMillis() + EEW.time);
 			String t = format.format(date);
-
 			httpclient.start();
 			HttpGet request = new HttpGet("http://www.kmoni.bosai.go.jp/new/webservice/hypo/eew/" + t + ".json");
 			Future<HttpResponse> future = httpclient.execute(request , null);
@@ -95,7 +94,7 @@ public class EEWListener extends BukkitRunnable{
 					EEW.reportcount++;
 					if(json.getBoolean("is_cancel")){
 						if(isalert){
-							if(EEW.config.getInt("alert.broadcast.mode") <= 3 || (EEW.config.getInt("alert.console.mode") <= 3 && (EEW.config.getInt("alert.console.mode") <= 3 ||EEW.config.getInt("alert.title.mode") <= 3 ))){
+							if(EEW.config.getInt("alert.broadcast.mode") <= 3 || (EEW.config.getInt("alert.console.mode") <= 3 && (EEW.config.getInt("alert.message.mode") <= 3 ||EEW.config.getInt("alert.title.mode") <= 3 ))){
 								Bukkit.broadcastMessage(EEW.getText("cancelled"));
 							}else if(EEW.config.getInt("alert.console.mode") <= 3){
 								Bukkit.getLogger().info(EEW.getText("cancelled"));
@@ -168,7 +167,7 @@ public class EEWListener extends BukkitRunnable{
 		}
 	}
 	private static void sendAlert(int mode, boolean is_final, String region, String intensity, String magunitude, String depth, String latitude, String longitude, String origin_time, String report_num){
-		if((mode != 4 && EEW.config.getInt("alert.console.mode") <= mode) || (EEW.config.getBoolean("alert.message.final") && is_final)){
+		if((mode != 4 && EEW.config.getInt("alert.console.mode") <= mode) || (EEW.config.getBoolean("alert.console.final") && is_final)){
 			Bukkit.getLogger().info(EEW.getText("alert-console").replaceAll("%region%", region).replaceAll("%intensity%", intensity).replaceAll("%magunitude%", magunitude).replaceAll("%depth%", depth).replaceAll("%latitude%", latitude).replaceAll("%longitude%", longitude).replaceAll("%origin_time%", origin_time).replaceAll("%report_num%", report_num));
 		}
 		if((mode != 4 && EEW.config.getInt("alert.broadcast.mode") <= mode) || (EEW.config.getBoolean("alert.broadcast.final") && is_final)){

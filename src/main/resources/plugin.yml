@@ -1,24 +1,12 @@
 name: EEW-Plugin
-version: 1.0.0
+version: 1.1.0
 main: tk.hadadayo.EEW.EEW
 commands:
   eew:
     description: EEW command
-    usage: /eew <on|off|status|reloadconfig|reloadlang>
+    usage: /eew <on|off|status|reloadconfig|reloadlang|synctime>
     permission: eew.eew
 permissions:
-  eew.eew.on:
-    description: EEW Enable
-    default: op
-  eew.eew.off:
-    description: EEW Disable
-    default: op
-  eew.eew.status:
-    description: EEW status
-    default: true
-  eew.eew.reloadconfig:
-    description: EEW reload config file
-    default: op
-  eew.eew.reloadlang:
-    description: EEW reload lang file
+  eew.eew:
+    description: EEW command
     default: op

@@ -1,10 +1,11 @@
 package tk.hadadayo.EEW;
 
+import tk.hadadayo.EEW.EEWSyncTime;
+
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -34,6 +35,7 @@ public class EEW extends JavaPlugin{
 	public static int status;
 	public static int earthquakecount = 0;
 	public static int reportcount = 0;
+	public static long time = 0;
 	@Override
 	public void onEnable(){
 		loadConfig();
@@ -41,9 +43,11 @@ public class EEW extends JavaPlugin{
 		save(config,"config.yml");
 		save(lang,"lang.yml");
 		if(this.config.getBoolean("EEW")){
-			id = new EEWListener().runTaskTimer(this, 0, this.config.getInt("tick")).getTaskId();
 			new EEWAlarm().runTaskTimer(this, 0, 2);
 			getLogger().info(getText("eew-on"));
+			getLogger().info(getText("time-sync-start"));
+			Bukkit.getScheduler().runTaskAsynchronously(this, new EEWSyncTime());
+			id = new EEWListener().runTaskTimer(this, 0, this.config.getInt("tick")).getTaskId();
 			this.status = 0;
 		}else{
 			getLogger().info(getText("eew-off"));
@@ -111,6 +115,7 @@ public class EEW extends JavaPlugin{
 			list.add("off");
 			list.add("reloadconfig");
 			list.add("reloadlang");
+			list.add("synctime");
 			List<String> newlist = new ArrayList<>();
 			for (String str : list) {
 				if(str.startsWith(args[args.length - 1])){
@@ -137,6 +142,8 @@ public class EEW extends JavaPlugin{
 					}else{
 						getLogger().info(getText("command-eew-on"));
 					}
+					getLogger().info(getText("time-sync-start"));
+					Bukkit.getScheduler().runTaskAsynchronously(this, new EEWSyncTime());
 				}else{
 					sender.sendMessage(getText("command-eew-on-already"));
 				}
@@ -177,6 +184,7 @@ public class EEW extends JavaPlugin{
 						getLogger().info(getText("eew-on"));
 					}
 					id = new EEWListener().runTaskTimer(this, 0, this.config.getInt("tick")).getTaskId();
+					Bukkit.getScheduler().runTaskAsynchronously(this, new EEWSyncTime());
 				}else{
 					if(status != 1){
 						getLogger().info(getText("eew-off"));
@@ -187,6 +195,11 @@ public class EEW extends JavaPlugin{
 				loadLang();
 				save(lang,"lang.yml");
 				sender.sendMessage(getText("command-eew-reloadlang"));
+				return true;
+			}else if(args[0].equalsIgnoreCase("synctime")){
+				EEWSyncTime.player = (Player)sender;
+				sender.sendMessage(getText("time-sync-start"));
+				Bukkit.getScheduler().runTaskAsynchronously(this, new EEWSyncTime());
 				return true;
 			}
 		}
