@@ -59,7 +59,7 @@ public class EEWListener extends BukkitRunnable{
 			Date date = new Date(System.currentTimeMillis() + EEW.time);
 			String t = format.format(date);
 			httpclient.start();
-			HttpGet request = new HttpGet("http://www.kmoni.bosai.go.jp/new/webservice/hypo/eew/" + t + ".json");
+			HttpGet request = new HttpGet("http://www.kmoni.bosai.go.jp/webservice/hypo/eew/" + t + ".json");
 			Future<HttpResponse> future = httpclient.execute(request , null);
 			HttpResponse response = future.get();
 			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK){				
